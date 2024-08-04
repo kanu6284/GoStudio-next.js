@@ -32,11 +32,8 @@ export function DeleteCustomer({ id }: { id: string }) {
   const deleteCustomerWithId = deleteCustomer.bind(null, id);
 
   return (
-    <form action={deleteCustomerWithId} method="post">
-      <button
-        type="submit"
-        className="rounded-md border p-2 hover:bg-gray-100"
-      >
+    <form action={deleteCustomerWithId}>
+     <button className="rounded-md border p-2 hover:bg-gray-100">
         <span className="sr-only">Delete</span>
         <TrashIcon className="w-5" />
       </button>
@@ -44,22 +41,3 @@ export function DeleteCustomer({ id }: { id: string }) {
   );
 }
 
-// Main component combining all functionalities
-export default function CustomerActionsPage() {
-  // Example IDs, replace these with dynamic IDs as needed
-  const customerId = 'example-id';
-
-  return (
-    <div>
-      <div className="mb-4">
-        <CreateCustomer />
-      </div>
-      <div className="mb-4">
-        <UpdateCustomer id={customerId} />
-      </div>
-      <div className="mb-4">
-        <DeleteCustomer id={customerId} />
-      </div>
-    </div>
-  );
-}

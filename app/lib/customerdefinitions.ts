@@ -78,6 +78,8 @@ export type User = {
     customer_id: string;
     amount: number;
     status: 'pending' | 'paid';
+    date: string;
+
   };
   export type CustomerField = {
     id: string;
