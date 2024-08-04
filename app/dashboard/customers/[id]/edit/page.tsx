@@ -1,14 +1,16 @@
-// File path: app/dashboard/customers/[id]/edit/page.tsx
-
 import Form from '@/app/ui/customers/edit-form';
-import Breadcrumbs from '@/app/ui/customers/breadcrumbs'; // Ensure this is the correct path
-import { fetchCustomerById } from '@/app/lib/cusdata';  // Ensure this function is implemented correctly
+import Breadcrumbs from '@/app/ui/customers/breadcrumbs';
+import { fetchCustomerById } from '@/app/lib/cusdata';
 import { notFound } from 'next/navigation';
+import { fetchCustomers } from '@/app/lib/data';
 
 export default async function Page({ params }: { params: { id: string } }) {
   const id = params.id;
-  const customer = await fetchCustomerById(id);
-
+  const [customer, customers] = await Promise.all([
+    fetchCustomerById(id),
+    fetchCustomers(),
+  ]);
+  
   if (!customer) {
     notFound();
   }
@@ -25,7 +27,7 @@ export default async function Page({ params }: { params: { id: string } }) {
           },
         ]}
       />
-      <Form customer={customer} />
+      <Form customer={customer} customers={customers} />
     </main>
   );
 }

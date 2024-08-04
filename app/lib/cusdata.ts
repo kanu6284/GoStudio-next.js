@@ -6,7 +6,8 @@ import {
   InvoicesTable,
   LatestInvoiceRaw,
   Revenue,
-} from './definitions';
+  CustomerForm,
+} from '@/app/lib/customerdefinitions';
 import { formatCurrency } from './utils';
 
 // Fetch Revenue Data
@@ -137,7 +138,7 @@ export async function fetchInvoicesPages(query: string) {
 }
 
 // Fetch Invoice By ID
-export async function fetchInvoiceById(id: string) {
+export async function fetchInvoiceById(id: string): Promise<InvoiceForm | null> {
   try {
     const data = await sql<InvoiceForm>`
       SELECT
@@ -149,11 +150,14 @@ export async function fetchInvoiceById(id: string) {
       WHERE invoices.id = ${id};
     `;
 
+    if (data.rows.length === 0) {
+      return null;
+    }
+
     const invoice = data.rows.map((invoice) => ({
       ...invoice,
       amount: invoice.amount / 100, // Convert amount from cents to dollars
     }));
-    console.log(invoice); // Invoice is an empty array []
 
     return invoice[0];
   } catch (error) {
@@ -183,19 +187,20 @@ export async function fetchAllCustomers() {
 }
 
 // Fetch Customer By ID
-export async function fetchCustomerById(id: string) {
+export async function fetchCustomerById(id: string): Promise<CustomerForm | null> {
   try {
-    const data = await sql<CustomerField>`
-      SELECT
-        id,
-        name,
-        email,
-        image_url
-      FROM customers
-      WHERE id = ${id}
-    `;
-
-    return data.rows[0];
+    const response = await fetch(`/api/customers/${id}`);
+    if (!response.ok) {
+      return null;
+    }
+    
+    const customer = await response.json();
+    return {
+      id: customer.id,
+      name: customer.name,
+      amount: customer.amount, // Ensure the fetched data includes 'amount'
+      status: customer.status, // Ensure the fetched data includes 'status'
+    };
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch customer by ID.');
