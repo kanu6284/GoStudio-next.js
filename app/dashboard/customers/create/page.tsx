@@ -1,4 +1,4 @@
-import Form from '@/app/ui/invoices/create-form'; // Ensure this is the correct path or create a specific form for customers
+import Form from '@/app/ui/customers/create-form';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs'; // Ensure this is the correct path
 import { fetchCustomers } from '@/app/lib/cusdata';
 

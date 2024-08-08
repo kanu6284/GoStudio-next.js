@@ -32,14 +32,14 @@ export async function createInvoice(formData: FormData) {
     VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
   `;
 
-  revalidatePath('/dashboard/customers');
-  redirect('/dashboard/customers');
+  revalidatePath('/dashboard/invoices');
+  redirect('/dashboard/invoices');
 }
 
 export async function deleteInvoice(id: string) {
   await sql`DELETE FROM invoices WHERE id = ${id}`;
-  revalidatePath('/dashboard/customers');
-  redirect('/dashboard/customers');
+  revalidatePath('/dashboard/invoices');
+  redirect('/dashboard/invoices');
 }
 
 const UpdateInvoice = InvoiceSchema.pick({
@@ -70,8 +70,8 @@ export async function updateInvoice(id: string, searchParams: URLSearchParams) {
   `;
 
   // Revalidate the path and redirect
-  revalidatePath('/dashboard/customers');
-  redirect('/dashboard/customers');
+  revalidatePath('/dashboard/invoices');
+  redirect('/dashboard/invoices');
 }
 
 // Define and export State type for invoices

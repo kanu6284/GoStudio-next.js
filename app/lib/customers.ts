@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation';
 
 // Define the schema for customer
 const CustomerSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   name: z.string(),
   email: z.string().email(),
   phone: z.string(),
@@ -38,6 +38,7 @@ export async function deleteCustomer(id: string) {
   redirect('/dashboard/customers');
 }
 
+// UpdateCustomer schema with required fields
 const UpdateCustomer = CustomerSchema.pick({
   id: true,
   name: true,
@@ -45,41 +46,27 @@ const UpdateCustomer = CustomerSchema.pick({
   phone: true,
 });
 
-export async function updateCustomer(id: string, formData: FormData) {
-  const { name, email, phone } = UpdateCustomer.parse({
+export async function updateCustomer(id: string, searchParams: URLSearchParams) {
+  const name = searchParams.get('name');
+  const email = searchParams.get('email');
+  const phone = searchParams.get('phone');
+
+  // Parse and validate data
+  const parsedData = UpdateCustomer.parse({
     id,
-    name: formData.get('name'),
-    email: formData.get('email'),
-    phone: formData.get('phone'),
+    name,
+    email,
+    phone,
   });
 
-  // Logging for debugging
-  console.log('Updating customer with ID:', id);
-  console.log('Name:', name);
-  console.log('Email:', email);
-  console.log('Phone:', phone);
-
-  try {
-    // Perform the database update
-    await sql`
-      UPDATE customers
-      SET name = ${name}, email = ${email}, phone = ${phone}
-      WHERE id = ${id}
-    `;
-  } catch (error) {
-    console.error('Error updating customer:', error);
-    throw error;
-  }
+  // Perform the database update using parameterized query
+  await sql`
+    UPDATE customers
+    SET name = ${parsedData.name}, email = ${parsedData.email}, phone = ${parsedData.phone}
+    WHERE id = ${parsedData.id}
+  `;
 
   // Revalidate the path and redirect
   revalidatePath('/dashboard/customers');
   redirect('/dashboard/customers');
 }
-
-// Define and export State type for customers
-export type CustomerState = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-};

@@ -1,6 +1,9 @@
+"use client";
+
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Link from 'next/link';
-import { deleteCustomer } from '@/app/lib/customers'; 
+import { deleteCustomer } from '@/app/lib/customers';
+import { useState } from 'react';
 
 // Component for creating a customer
 export function CreateCustomer() {
@@ -27,17 +30,29 @@ export function UpdateCustomer({ id }: { id: string }) {
   );
 }
 
-// Component for deleting a customer
 export function DeleteCustomer({ id }: { id: string }) {
-  const deleteCustomerWithId = deleteCustomer.bind(null, id);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsDeleting(true);
+    try {
+      await deleteCustomer(id);
+      // Optionally, add UI update logic here after deletion
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+      // Optionally, show user-friendly error message
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
-    <form action={deleteCustomerWithId}>
-     <button className="rounded-md border p-2 hover:bg-gray-100">
+    <form onSubmit={handleDelete}>
+      <button type="submit" className="rounded-md border p-2 hover:bg-gray-100" disabled={isDeleting}>
         <span className="sr-only">Delete</span>
         <TrashIcon className="w-5" />
       </button>
     </form>
   );
 }
-
